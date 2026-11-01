@@ -47,8 +47,8 @@ const verifyToken = async (req, res, next) => {
         
     } catch (error) {
         // console.log('error: ',error.message)
-        return res.status(500).send({
-            message: 'Server Error'
+        return res.status(401).send({
+            message: 'Unauthorized: Invalid or missing token or Server Error' 
         })
     }
     
