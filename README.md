@@ -17,6 +17,7 @@ HelpHive is a community-driven volunteering platform that connects people throug
 
 - Event creation API with MongoDB integration
 - JWT-based API authentication using Better Auth JWKS and `jose` for token verification
+- Event creator details (`id`, `name`, `email`) set on the server from the verified token
 
 ## Technologies
 
