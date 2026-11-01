@@ -20,7 +20,7 @@ HelpHive is a community-driven volunteering platform that connects people throug
 
 ## API Endpoints
 
-**Base URL:** `https://helphive-community-server.vercel.app`
+**Base URL:** [https://helphive-community-server.vercel.app](https://helphive-community-server.vercel.app)
 
 | Method | Endpoint | Description |
 |---|---|---|
