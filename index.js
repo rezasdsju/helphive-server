@@ -19,10 +19,19 @@ export async function connectToMongoDB() {
     console.dir(err);
   }
 }
-const db = connectToMongoDB()
+const mongoConnection = await connectToMongoDB()
+const db = mongoConnection.db('helphive')
 const events = db.collection('events')
 app.get('/',(req,res)=>{
     res.send('Hello HelpHive')
+})
+
+app.post('/create-event', async(req,res)=>{
+    const eventData = req.body
+    console.log('eventData: ',eventData)
+    const result = await events.insertOne(eventData)
+    console.log('result: ',result)
+    res.send(result)
 })
 
 app.listen(port,()=>{
