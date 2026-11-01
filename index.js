@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { jwtVerify, createRemoteJWKSet, errors } from 'jose'
 
 
@@ -70,16 +70,31 @@ app.get('/', (req, res) => {
 //     }
 // })
 
-app.get('/upcoming-events', async(req,res)=>{
-    try{
+app.get('/upcoming-events', async (req, res) => {
+    try {
         const upcomingEvents = await events.find({
-            date:{
-                $gt:new Date().toISOString()
+            date: {
+                $gt: new Date().toISOString()
             }
         }).toArray()
         res.send(upcomingEvents)
-    } catch(error) {
+    } catch (error) {
         console.log(error)
+    }
+})
+
+app.get('/upcoming-events/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        if (!id) {
+            return res.status(400).send({ message: 'Event ID is required' })
+        }
+        const query = { _id: new ObjectId(id) }
+        const result = await events.findOne(query)
+        res.send(result)
+    } catch (error) {
+        // console.log(error)
+        res.status(500).send({ message: 'Internal server error' })
     }
 })
 app.post('/create-event', verifyToken, async (req, res) => {
