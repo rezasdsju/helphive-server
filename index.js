@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
 import { MongoClient } from 'mongodb';
-import { jwtVerify, createRemoteJWKSet } from 'jose'
+import { jwtVerify, createRemoteJWKSet, errors } from 'jose'
 
 
 const app = express()
@@ -59,6 +59,29 @@ app.get('/', (req, res) => {
     res.send('Hello HelpHive')
 })
 
+
+// app.get('/all-events', async(req,res)=>{
+//     try {
+//         const allEvents = await events.find().toArray()
+//         // console.log('allEvents: ',allEvents)
+//         res.send(allEvents)
+//     } catch(error){
+//         res.send(error.message)
+//     }
+// })
+
+app.get('/upcoming-events', async(req,res)=>{
+    try{
+        const upcomingEvents = await events.find({
+            date:{
+                $gt:new Date().toISOString()
+            }
+        }).toArray()
+        res.send(upcomingEvents)
+    } catch(error) {
+        console.log(error)
+    }
+})
 app.post('/create-event', verifyToken, async (req, res) => {
 
     try {
