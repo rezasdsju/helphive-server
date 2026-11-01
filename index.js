@@ -35,10 +35,7 @@ app.post('/create-event', async (req, res) => {
             })
         }
         const result = await events.insertOne(eventData)
-        res.status(201).send({
-            message: 'Event created successfully',
-            insertedId: result.insertedId
-        });
+        res.send(result);
     } catch (error) {
         console.error('Error creating event:', error);
 
