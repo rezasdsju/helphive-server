@@ -72,8 +72,8 @@ app.post('/create-event', verifyToken, async (req, res) => {
             ...eventData,
             createdBy: {
                 id: req.user.id,
-                name:req.user.name,
-                email:req.user.email
+                name: req.user.name,
+                email: req.user.email
             }
         }
         const result = await events.insertOne(eventDataWithUserInfo)
