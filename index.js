@@ -40,18 +40,18 @@ const verifyToken = async (req, res, next) => {
         const JWKS = createRemoteJWKSet(
             new URL(`${process.env.FRONTEND_BASE_URL}/api/auth/jwks`)
         )
-        const { payload } = await jwtVerify(token,JWKS)
+        const { payload } = await jwtVerify(token, JWKS)
         // console.log('payload: ',payload)
-
+        req.user = payload
         next()
-        
+
     } catch (error) {
         // console.log('error: ',error.message)
         return res.status(401).send({
-            message: 'Unauthorized: Invalid or missing token or Server Error' 
+            message: 'Unauthorized: Invalid or missing token or Server Error'
         })
     }
-    
+
 
 }
 
@@ -68,7 +68,15 @@ app.post('/create-event', verifyToken, async (req, res) => {
                 message: 'Event data is required'
             })
         }
-        const result = await events.insertOne(eventData)
+        const eventDataWithUserInfo = {
+            ...eventData,
+            createdBy: {
+                id: req.user.id,
+                name:req.user.name,
+                email:req.user.email
+            }
+        }
+        const result = await events.insertOne(eventDataWithUserInfo)
         res.send(result);
     } catch (error) {
         console.error('Error creating event:', error);
