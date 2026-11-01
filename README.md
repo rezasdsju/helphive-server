@@ -35,3 +35,4 @@ HelpHive is a community-driven volunteering platform that connects people throug
 |---|---|---|
 | POST | `/create-event` | Create a new event |
 | GET | `/upcoming-events` | Retrieve all upcoming events |
+| GET | `/upcoming-events/:id` | Retrieve event details by ID |
