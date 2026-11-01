@@ -9,6 +9,10 @@ HelpHive is a community-driven volunteering platform that connects people throug
 
 **Backend API:** [https://helphive-community-server.vercel.app/](https://helphive-community-server.vercel.app/)
 
+## Related Repository
+
+**Frontend:** [HelpHive Client](https://github.com/rezasdsju/helphive-client)
+
 ## Features
 
 - Create event API with MongoDB integration
