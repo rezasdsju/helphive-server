@@ -167,7 +167,13 @@ app.post('/add-participant/:id', verifyToken, async (req, res) => {
         }
         const userAlreadyJoined = participants.find((participant) => participant.id === userToBeParticipant.id)
 
+
         if (!userAlreadyJoined) {
+            if (participants.length >= eventData.maxParticipants) {
+                return res.status(409).send({
+                    message: 'This Event is already Full'
+                })
+            }
             const result = await events.updateOne(
                 query, {
                 $set: {
