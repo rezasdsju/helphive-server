@@ -159,6 +159,17 @@ app.post('/add-participant/:id', verifyToken, async (req, res) => {
         const eventData = await events.findOne(query)
         // console.log(eventData)
         if (!eventData) return res.status(404).send({ message: 'Event not found' })
+
+
+        const today = new Date().toLocaleDateString("en-CA", {
+            timeZone: 'Asia/Dhaka'
+        })
+        if (eventData.date < today) {
+            return res.status(400).send({
+                message: 'Cannot join a past event'
+            })
+        }
+
         const participants = eventData.participants || []
         const userToBeParticipant = {
             id: req.user.id,
