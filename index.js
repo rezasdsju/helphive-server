@@ -276,7 +276,7 @@ app.get('/manage-events', verifyToken, async (req, res) => {
 })
 
 
-app.post('/manage-events/:id', verifyToken, async(req,res)=>{
+app.patch('/manage-events/:id', verifyToken, async(req,res)=>{
     try {
         const {id} = req.params
         const query = {
@@ -284,8 +284,18 @@ app.post('/manage-events/:id', verifyToken, async(req,res)=>{
             'createdBy.id':req.user.id
         }
         const updatedEventFromClient = req.body
+        const updatedEventToSetDataBase = {
+            title:updatedEventFromClient.title, 
+            description:updatedEventFromClient.description, 
+            type:updatedEventFromClient.type, 
+            image:updatedEventFromClient.image, 
+            location:updatedEventFromClient.location, 
+            date:updatedEventFromClient.date, 
+            maxParticipants:updatedEventFromClient.maxParticipants
+
+        }
         const result = await events.updateOne(query,{
-            $set:updatedEventFromClient
+            $set:updatedEventToSetDataBase
         })
         if (result.matchedCount===0){
             return res.status(404).send({
