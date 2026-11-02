@@ -80,7 +80,7 @@ app.get('/upcoming-events', async (req, res) => {
         res.send(upcomingEvents)
     } catch (error) {
         // console.log(error)
-        res.status(500).send({message:'Internal Server Error'})
+        res.status(500).send({ message: 'Internal Server Error' })
         return
     }
 })
@@ -94,7 +94,7 @@ app.get('/upcoming-events/limit-6', async (req, res) => {
         res.send(MostRecentUpcomingEvents)
     } catch (error) {
         // console.log(error)
-        res.status(500).send({message:'Internal Server Error'})
+        res.status(500).send({ message: 'Internal Server Error' })
         return
 
     }
@@ -181,6 +181,26 @@ app.post('/add-participant/:id', verifyToken, async (req, res) => {
     }
 })
 
+
+
+
+app.get('/joined-events', verifyToken, async (req, res) => {
+    try {
+        const user = req.user
+        const upcomingEvents = await events.find({
+            date: {
+                $gt: new Date().toISOString()
+            }
+        }).toArray()
+        const joinedEvents = upcomingEvents.filter(event => event.participants.some(person => person.id === user.id))
+        // console.log(joinedEvents)
+        res.send(joinedEvents)
+    } catch (error) {
+        // console.log(error)
+        res.status(500).send('Internal Server Error')
+        return
+    }
+})
 app.listen(port, () => {
     console.log(`Server is running on PORT ${port}`)
 })
