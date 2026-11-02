@@ -20,6 +20,7 @@ HelpHive is a community-driven volunteering platform that connects people throug
 - Event creator details (`id`, `name`, `email`) set on the server from the verified token
 - Retrieve all upcoming events
 - Retrieve individual event details by event ID
+- JWT-protected participant registration API with duplicate participation handling
 
 ## Technologies
 
@@ -28,13 +29,15 @@ HelpHive is a community-driven volunteering platform that connects people throug
 - MongoDB
 - CORS
 - dotenv
+- JOSE (JWT verification using JWKS)
 
 ## API Endpoints
 
 **Base URL:** [https://helphive-community-server.vercel.app](https://helphive-community-server.vercel.app)
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/create-event` | Create a new event |
-| GET | `/upcoming-events` | Retrieve all upcoming events |
-| GET | `/upcoming-events/:id` | Retrieve event details by ID |
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| POST | `/create-event` | Create a new event | JWT-protected |
+| GET | `/upcoming-events` | Retrieve all upcoming events | Public |
+| GET | `/upcoming-events/:id` | Retrieve event details by ID | Public |
+| POST | `/add-participant/:id` | Join an event | JWT-protected |
