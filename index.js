@@ -125,7 +125,7 @@ app.post('/create-event', verifyToken, async (req, res) => {
     }
 })
 
-app.post('/add-perticipants/:id', verifyToken, async (req, res) => {
+app.post('/add-participant/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params
         // console.log(id)
