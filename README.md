@@ -22,6 +22,8 @@ HelpHive is a community-driven volunteering platform that connects people throug
 - Retrieve the six nearest upcoming events
 - Retrieve individual event details by event ID
 - JWT-protected participant registration API with duplicate participation handling
+- Prevent users from joining past events
+- Enforce maximum participant limits during event registration
 - JWT-protected API to retrieve events joined by the authenticated user
 - JWT-protected API to retrieve events created by the authenticated user
 
