@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
 import { MongoClient, ObjectId } from 'mongodb';
-import { jwtVerify, createRemoteJWKSet, errors } from 'jose'
+import { jwtVerify, createRemoteJWKSet } from 'jose'
 
 
 const app = express()
@@ -72,9 +72,11 @@ app.get('/', (req, res) => {
 
 app.get('/upcoming-events', async (req, res) => {
     try {
+        const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" })
+
         const upcomingEvents = await events.find({
             date: {
-                $gt: new Date().toISOString()
+                $gte: today
             }
         }).toArray()
         res.send(upcomingEvents)
@@ -86,9 +88,12 @@ app.get('/upcoming-events', async (req, res) => {
 })
 app.get('/upcoming-events/limit-6', async (req, res) => {
     try {
+        const today = new Date().toLocaleDateString("en-CA", {
+            timeZone: "Asia/Dhaka"
+        })
         const MostRecentUpcomingEvents = await events.find({
             date: {
-                $gt: new Date().toISOString()
+                $gte: today
             }
         }).sort({ date: 1 }).limit(6).toArray()
         res.send(MostRecentUpcomingEvents)
@@ -108,6 +113,9 @@ app.get('/upcoming-events/:id', async (req, res) => {
         }
         const query = { _id: new ObjectId(id) }
         const result = await events.findOne(query)
+        if (!result) {
+            return res.status(404).send({ message: 'Event Not Found' })
+        }
         res.send(result)
     } catch (error) {
         // console.log(error)
@@ -187,18 +195,21 @@ app.post('/add-participant/:id', verifyToken, async (req, res) => {
 app.get('/joined-events', verifyToken, async (req, res) => {
     try {
         const user = req.user
+        const today = new Date().toLocaleDateString("en-CA", {
+            timeZone: "Asia/Dhaka"
+        })
         const upcomingEvents = await events.find({
             date: {
-                $gt: new Date().toISOString()
+                $gte: today
             }
-        }).sort({date:1}).toArray()
-        const allEvents = await events.find({}).sort({date:1}).toArray()
-        const joinedUpcomingEvents = upcomingEvents.filter(event => event.participants.some(participant => participant.id === user.id))
-        const joinedAllEvents = allEvents.filter(event=>event.participants.some(participant=>participant.id===user.id))
+        }).sort({ date: 1 }).toArray()
+        const allEvents = await events.find({}).sort({ date: 1 }).toArray()
+        const joinedUpcomingEvents = upcomingEvents.filter(event => (event.participants || []).some(participant => participant.id === user.id))
+        const joinedAllEvents = allEvents.filter(event => (event.participants || []).some(participant => participant.id === user.id))
 
         const result = [
-            {joinedAllEvents:joinedAllEvents},
-            {joinedUpcomingEvents:joinedUpcomingEvents}
+            { joinedAllEvents: joinedAllEvents },
+            { joinedUpcomingEvents: joinedUpcomingEvents }
         ]
         // console.log(result)
         res.send(result)
@@ -210,7 +221,32 @@ app.get('/joined-events', verifyToken, async (req, res) => {
 })
 
 
+app.get('/manage-events', verifyToken, async (req, res) => {
+    try {
+        const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Dhaka" })
 
+        const user = req.user
+        const createdAllEvents = await events.find({
+            "createdBy.id": user.id
+        }).sort({ date: 1 }).toArray()
+        // console.log(createdEvents)
+        const createdUpcomingEvents = await events.find({
+            date: {
+                $gte: today
+
+            },
+            "createdBy.id": user.id
+        }).sort({ date: 1 }).toArray()
+        const createdAllAndUpcomingEvents = [
+            { createdAllEvents: createdAllEvents },
+            { createdUpcomingEvents: createdUpcomingEvents }
+        ]
+        res.send(createdAllAndUpcomingEvents)
+
+    } catch (error) {
+        res.status(500).send({ message: 'Internal Server Error' })
+    }
+})
 
 
 app.listen(port, () => {
