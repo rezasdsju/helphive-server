@@ -50,4 +50,4 @@ HelpHive is a community-driven volunteering platform that connects people throug
 | POST | `/add-participant/:id` | Join an event | JWT-protected |
 | GET | `/joined-events` | Retrieve events joined by the authenticated user | JWT-protected |
 | GET | `/manage-events` | Retrieve events created by the authenticated user | JWT-protected |
-| POST | `/manage-events/:id` | Update an event created by the authenticated user | JWT-protected |
+| PATCH | `/manage-events/:id` | Update an event created by the authenticated user | JWT-protected |
