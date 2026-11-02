@@ -191,7 +191,7 @@ app.get('/joined-events', verifyToken, async (req, res) => {
             date: {
                 $gt: new Date().toISOString()
             }
-        }).toArray()
+        }).sort({date:1}).toArray()
         const joinedEvents = upcomingEvents.filter(event => event.participants.some(person => person.id === user.id))
         // console.log(joinedEvents)
         res.send(joinedEvents)
