@@ -26,6 +26,7 @@ HelpHive is a community-driven volunteering platform that connects people throug
 - Enforce maximum participant limits during event registration
 - JWT-protected API to retrieve events joined by the authenticated user
 - JWT-protected API to retrieve events created by the authenticated user
+- JWT-Protected Event Update API
 
 ## Technologies
 
@@ -49,3 +50,4 @@ HelpHive is a community-driven volunteering platform that connects people throug
 | POST | `/add-participant/:id` | Join an event | JWT-protected |
 | GET | `/joined-events` | Retrieve events joined by the authenticated user | JWT-protected |
 | GET | `/manage-events` | Retrieve events created by the authenticated user | JWT-protected |
+| POST | `/manage-events/:id` | Update an event created by the authenticated user | JWT-protected |
