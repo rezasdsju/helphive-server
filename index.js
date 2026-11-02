@@ -276,6 +276,30 @@ app.get('/manage-events', verifyToken, async (req, res) => {
 })
 
 
+app.post('/manage-events/:id', verifyToken, async(req,res)=>{
+    try {
+        const {id} = req.params
+        const query = {
+            _id: new ObjectId(id),
+            'createdBy.id':req.user.id
+        }
+        const updatedEventFromClient = req.body
+        const result = await events.updateOne(query,{
+            $set:updatedEventFromClient
+        })
+        if (result.matchedCount===0){
+            return res.status(404).send({
+                message:'Event not found or you are not authorized to update it'
+            })
+        }
+        res.send(result)
+    } catch(error){
+        res.status(500).send({
+            message:'Internal Server Error'
+        })
+    }
+})
+
 app.listen(port, () => {
     console.log(`Server is running on PORT ${port}`)
 })
