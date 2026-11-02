@@ -133,6 +133,7 @@ app.post('/create-event', verifyToken, async (req, res) => {
         }
         const eventDataWithUserInfo = {
             ...eventData,
+            participants: [],
             createdBy: {
                 id: req.user.id,
                 name: req.user.name,
