@@ -79,7 +79,24 @@ app.get('/upcoming-events', async (req, res) => {
         }).toArray()
         res.send(upcomingEvents)
     } catch (error) {
-        console.log(error)
+        // console.log(error)
+        res.status(500).send({message:'Internal Server Error'})
+        return
+    }
+})
+app.get('/upcoming-events/limit-6', async (req, res) => {
+    try {
+        const MostRecentUpcomingEvents = await events.find({
+            date: {
+                $gt: new Date().toISOString()
+            }
+        }).sort({ date: 1 }).limit(6).toArray()
+        res.send(MostRecentUpcomingEvents)
+    } catch (error) {
+        // console.log(error)
+        res.status(500).send({message:'Internal Server Error'})
+        return
+
     }
 })
 
