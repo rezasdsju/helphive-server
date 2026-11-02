@@ -131,6 +131,15 @@ app.post('/create-event', verifyToken, async (req, res) => {
                 message: 'Event data is required'
             })
         }
+
+        const today = new Date().toLocaleDateString('en-CA',{
+            timeZone:'Asia/Dhaka'
+        })
+        if (!eventData.date || eventData.date<=today){
+            return res.status(400).send({
+                message:'Event date must be in future'
+            })
+        }
         const eventDataWithUserInfo = {
             ...eventData,
             participants: [],
