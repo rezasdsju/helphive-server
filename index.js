@@ -125,6 +125,45 @@ app.post('/create-event', verifyToken, async (req, res) => {
     }
 })
 
+app.post('/add-perticipants/:id', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params
+        // console.log(id)
+        const query = { _id: new ObjectId(id) }
+        // console.log(query)
+        const eventData = await events.findOne(query)
+        // console.log(eventData)
+        if (!eventData) return res.status(404).send({ message: 'Event not found' })
+        const participants = eventData.participants || []
+        const userToBeParticipant = {
+            id: req.user.id,
+            name: req.user.name,
+            email: req.user.email
+        }
+        const userAlreadyJoined = participants.find((participant) => participant.id === userToBeParticipant.id)
+
+        if (!userAlreadyJoined) {
+            const result = await events.updateOne(
+                query, {
+                $set: {
+                    participants: [...participants, userToBeParticipant]
+                }
+            }
+            )
+            res.send(result)
+            return
+        }
+        res.status(409).send({
+            message: 'You have already joined this event'
+        })
+
+
+    } catch (error) {
+        // console.log(error)
+        res.status(500).send({ message: 'Internal server error' })
+    }
+})
+
 app.listen(port, () => {
     console.log(`Server is running on PORT ${port}`)
 })
