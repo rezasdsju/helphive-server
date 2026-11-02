@@ -192,15 +192,27 @@ app.get('/joined-events', verifyToken, async (req, res) => {
                 $gt: new Date().toISOString()
             }
         }).sort({date:1}).toArray()
-        const joinedEvents = upcomingEvents.filter(event => event.participants.some(person => person.id === user.id))
-        // console.log(joinedEvents)
-        res.send(joinedEvents)
+        const allEvents = await events.find({}).sort({date:1}).toArray()
+        const joinedUpcomingEvents = upcomingEvents.filter(event => event.participants.some(participant => participant.id === user.id))
+        const joinedAllEvents = allEvents.filter(event=>event.participants.some(participant=>participant.id===user.id))
+
+        const result = [
+            {joinedAllEvents:joinedAllEvents},
+            {joinedUpcomingEvents:joinedUpcomingEvents}
+        ]
+        // console.log(result)
+        res.send(result)
     } catch (error) {
         // console.log(error)
         res.status(500).send('Internal Server Error')
         return
     }
 })
+
+
+
+
+
 app.listen(port, () => {
     console.log(`Server is running on PORT ${port}`)
 })
