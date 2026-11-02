@@ -19,6 +19,7 @@ HelpHive is a community-driven volunteering platform that connects people throug
 - JWT-based API authentication using Better Auth JWKS and `jose` for token verification
 - Event creator details (`id`, `name`, `email`) set on the server from the verified token
 - Retrieve all upcoming events
+- Retrieve the six nearest upcoming events
 - Retrieve individual event details by event ID
 - JWT-protected participant registration API with duplicate participation handling
 
@@ -40,4 +41,5 @@ HelpHive is a community-driven volunteering platform that connects people throug
 | POST | `/create-event` | Create a new event | JWT-protected |
 | GET | `/upcoming-events` | Retrieve all upcoming events | Public |
 | GET | `/upcoming-events/:id` | Retrieve event details by ID | Public |
+| GET | `/upcoming-events/limit-6` | Retrieve six nearest upcoming events | Public |
 | POST | `/add-participant/:id` | Join an event | JWT-protected |
