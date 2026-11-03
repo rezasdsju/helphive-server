@@ -52,3 +52,81 @@ HelpHive is a community-driven volunteering platform that connects people throug
 | GET | `/manage-events` | Retrieve events created by the authenticated user | JWT-protected |
 | PATCH | `/manage-events/:id` | Update an event created by the authenticated user | JWT-protected |
 | DELETE | `/manage-events/:id` | Delete an event created by the authenticated user | JWT-protected |
+
+
+## Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+MONGODB_URI=
+FRONTEND_BASE_URL=
+```
+
+- `MONGODB_URI`: MongoDB connection string.
+- `FRONTEND_BASE_URL`: Frontend URL used for Better Auth JWKS verification.
+
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/rezasdsju/helphive-server.git
+cd helphive-server
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file and add the required environment variables.
+
+### 4. Start the Server
+
+```bash
+nodemon index.js
+```
+
+The server will start locally on port `5000`.
+
+## Database
+
+- **Database:** MongoDB
+- **Database Name:** `helphive`
+- **Collection:** `events`
+
+## Authentication & Authorization
+
+- Better Auth handles user authentication.
+- JWT tokens are verified using `jose`.
+- Better Auth JWKS is used for JWT verification.
+- Protected endpoints require a valid Bearer token.
+- Users can only update or delete their own events.
+
+### Authorization Header
+
+```http
+Authorization: Bearer <your_jwt_token>
+```
+
+## Deployment
+
+**Platform:** Vercel
+
+**Live Backend:** https://helphive-community-server.vercel.app/
+
+## Contributing
+
+Contributions, suggestions, and feedback are welcome. Feel free to open an issue or submit a pull request.
+
+## Author
+
+**Rezaul Karim Rifat**
+
+- GitHub: https://github.com/rezasdsju
+- Frontend Repository: https://github.com/rezasdsju/helphive-client
+- Backend Repository: https://github.com/rezasdsju/helphive-server
