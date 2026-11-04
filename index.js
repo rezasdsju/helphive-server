@@ -12,6 +12,10 @@ app.use(express.json())
 const port = process.env.PORT || 5000
 
 const client = new MongoClient(process.env.MONGODB_URI);
+const JWKS = createRemoteJWKSet(
+    new URL(`${process.env.FRONTEND_BASE_URL}/api/auth/jwks`)
+)
+
 export async function connectToMongoDB() {
     try {
         await client.connect();
@@ -37,9 +41,7 @@ const verifyToken = async (req, res, next) => {
         if (!token) {
             return res.status(401).send({ message: 'Unauthorized: Invalid or missing token' })
         }
-        const JWKS = createRemoteJWKSet(
-            new URL(`${process.env.FRONTEND_BASE_URL}/api/auth/jwks`)
-        )
+
         const { payload } = await jwtVerify(token, JWKS)
         // console.log('payload: ',payload)
         req.user = payload
@@ -60,20 +62,20 @@ const verifyToken = async (req, res, next) => {
 
 
 const apiEndpoints = [
-    { method: 'POST',   endpoint: '/create-event',            description: 'Create a new event',                                   access: 'JWT-protected' },
-    { method: 'GET',    endpoint: '/upcoming-events',         description: 'Retrieve all upcoming events',                          access: 'Public' },
-    { method: 'GET',    endpoint: '/upcoming-events/limit-6', description: 'Retrieve six nearest upcoming events',                  access: 'Public' },
-    { method: 'GET',    endpoint: '/upcoming-events/:id',     description: 'Retrieve event details by ID',                          access: 'Public' },
-    { method: 'POST',   endpoint: '/add-participant/:id',     description: 'Join an event',                                         access: 'JWT-protected' },
-    { method: 'GET',    endpoint: '/joined-events',           description: 'Retrieve events joined by the authenticated user',      access: 'JWT-protected' },
-    { method: 'GET',    endpoint: '/manage-events',           description: 'Retrieve events created by the authenticated user',     access: 'JWT-protected' },
-    { method: 'PATCH',  endpoint: '/manage-events/:id',       description: 'Update an event created by the authenticated user',     access: 'JWT-protected' },
-    { method: 'DELETE', endpoint: '/manage-events/:id',       description: 'Delete an event created by the authenticated user',     access: 'JWT-protected' },
+    { method: 'POST', endpoint: '/create-event', description: 'Create a new event', access: 'JWT-protected' },
+    { method: 'GET', endpoint: '/upcoming-events', description: 'Retrieve all upcoming events', access: 'Public' },
+    { method: 'GET', endpoint: '/upcoming-events/limit-6', description: 'Retrieve six nearest upcoming events', access: 'Public' },
+    { method: 'GET', endpoint: '/upcoming-events/:id', description: 'Retrieve event details by ID', access: 'Public' },
+    { method: 'POST', endpoint: '/add-participant/:id', description: 'Join an event', access: 'JWT-protected' },
+    { method: 'GET', endpoint: '/joined-events', description: 'Retrieve events joined by the authenticated user', access: 'JWT-protected' },
+    { method: 'GET', endpoint: '/manage-events', description: 'Retrieve events created by the authenticated user', access: 'JWT-protected' },
+    { method: 'PATCH', endpoint: '/manage-events/:id', description: 'Update an event created by the authenticated user', access: 'JWT-protected' },
+    { method: 'DELETE', endpoint: '/manage-events/:id', description: 'Delete an event created by the authenticated user', access: 'JWT-protected' },
 ]
 app.get('/', (req, res) => {
     res.send({
         message: 'Welcome to HelpHive API',
-        endpoints:apiEndpoints
+        endpoints: apiEndpoints
     })
 })
 
@@ -88,7 +90,7 @@ app.get('/upcoming-events', async (req, res) => {
             date: {
                 $gte: today
             }
-        }).sort({date:1}).toArray()
+        }).sort({ date: 1 }).toArray()
         res.send(upcomingEvents)
     } catch (error) {
         // console.log(error)
@@ -142,12 +144,12 @@ app.post('/create-event', verifyToken, async (req, res) => {
             })
         }
 
-        const today = new Date().toLocaleDateString('en-CA',{
-            timeZone:'Asia/Dhaka'
+        const today = new Date().toLocaleDateString('en-CA', {
+            timeZone: 'Asia/Dhaka'
         })
-        if (!eventData.date || eventData.date<=today){
+        if (!eventData.date || eventData.date <= today) {
             return res.status(400).send({
-                message:'Event date must be in future'
+                message: 'Event date must be in future'
             })
         }
         const eventDataWithUserInfo = {
@@ -286,54 +288,54 @@ app.get('/manage-events', verifyToken, async (req, res) => {
 })
 
 
-app.patch('/manage-events/:id', verifyToken, async(req,res)=>{
+app.patch('/manage-events/:id', verifyToken, async (req, res) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
         const query = {
             _id: new ObjectId(id),
-            'createdBy.id':req.user.id
+            'createdBy.id': req.user.id
         }
         const updatedEventFromClient = req.body
         const updatedEventToSetDataBase = {
-            title:updatedEventFromClient.title, 
-            description:updatedEventFromClient.description, 
-            type:updatedEventFromClient.type, 
-            image:updatedEventFromClient.image, 
-            location:updatedEventFromClient.location, 
-            date:updatedEventFromClient.date, 
-            maxParticipants:updatedEventFromClient.maxParticipants
+            title: updatedEventFromClient.title,
+            description: updatedEventFromClient.description,
+            type: updatedEventFromClient.type,
+            image: updatedEventFromClient.image,
+            location: updatedEventFromClient.location,
+            date: updatedEventFromClient.date,
+            maxParticipants: updatedEventFromClient.maxParticipants
 
         }
-        const result = await events.updateOne(query,{
-            $set:updatedEventToSetDataBase
+        const result = await events.updateOne(query, {
+            $set: updatedEventToSetDataBase
         })
-        if (result.matchedCount===0){
+        if (result.matchedCount === 0) {
             return res.status(404).send({
-                message:'Event not found or you are not authorized to update it'
+                message: 'Event not found or you are not authorized to update it'
             })
         }
         res.send(result)
-    } catch(error){
+    } catch (error) {
         res.status(500).send({
-            message:'Internal Server Error'
+            message: 'Internal Server Error'
         })
     }
 })
-app.delete('/manage-events/:id',verifyToken,async(req,res)=>{
+app.delete('/manage-events/:id', verifyToken, async (req, res) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
         const query = {
             _id: new ObjectId(id),
             'createdBy.id': req.user.id
         }
         const result = await events.deleteOne(query)
-        if (result.deletedCount===0){
+        if (result.deletedCount === 0) {
             return res.status(404).send({
                 message: 'Event not found or you are not authorized to delete it'
             })
         }
         res.send(result)
-    } catch(error) {
+    } catch (error) {
         res.status(500).send('Internal Server Error')
     }
 })
