@@ -200,7 +200,7 @@ app.post('/add-participant/:id', verifyToken, async (req, res) => {
 
 
         if (!userAlreadyJoined) {
-            if (participants.length >= eventData.maxParticipants) {
+            if (participants.length >= Number(eventData.maxParticipants)) {
                 return res.status(409).send({
                     message: 'This Event is already Full'
                 })
