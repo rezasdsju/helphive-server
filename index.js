@@ -88,7 +88,7 @@ app.get('/upcoming-events', async (req, res) => {
             date: {
                 $gte: today
             }
-        }).toArray()
+        }).sort({date:1}).toArray()
         res.send(upcomingEvents)
     } catch (error) {
         // console.log(error)
