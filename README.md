@@ -22,7 +22,7 @@ HelpHive is a community-driven volunteering platform that connects people throug
 
 ### Events
 - Create events with category, date, location, image and a participant limit
-- Browse all upcoming events or the six nearest ones
+- Browse all upcoming events or explore the six nearest events, sorted by date in ascending order.
 - View full details of any event by ID
 
 ### Participation
