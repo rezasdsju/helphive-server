@@ -55,20 +55,30 @@ const verifyToken = async (req, res, next) => {
 
 }
 
+
+
+
+
+const apiEndpoints = [
+    { method: 'POST',   endpoint: '/create-event',            description: 'Create a new event',                                   access: 'JWT-protected' },
+    { method: 'GET',    endpoint: '/upcoming-events',         description: 'Retrieve all upcoming events',                          access: 'Public' },
+    { method: 'GET',    endpoint: '/upcoming-events/limit-6', description: 'Retrieve six nearest upcoming events',                  access: 'Public' },
+    { method: 'GET',    endpoint: '/upcoming-events/:id',     description: 'Retrieve event details by ID',                          access: 'Public' },
+    { method: 'POST',   endpoint: '/add-participant/:id',     description: 'Join an event',                                         access: 'JWT-protected' },
+    { method: 'GET',    endpoint: '/joined-events',           description: 'Retrieve events joined by the authenticated user',      access: 'JWT-protected' },
+    { method: 'GET',    endpoint: '/manage-events',           description: 'Retrieve events created by the authenticated user',     access: 'JWT-protected' },
+    { method: 'PATCH',  endpoint: '/manage-events/:id',       description: 'Update an event created by the authenticated user',     access: 'JWT-protected' },
+    { method: 'DELETE', endpoint: '/manage-events/:id',       description: 'Delete an event created by the authenticated user',     access: 'JWT-protected' },
+]
 app.get('/', (req, res) => {
-    res.send('Hello HelpHive')
+    res.send({
+        message: 'Welcome to HelpHive API',
+        endpoints:apiEndpoints
+    })
 })
 
 
-// app.get('/all-events', async(req,res)=>{
-//     try {
-//         const allEvents = await events.find().toArray()
-//         // console.log('allEvents: ',allEvents)
-//         res.send(allEvents)
-//     } catch(error){
-//         res.send(error.message)
-//     }
-// })
+
 
 app.get('/upcoming-events', async (req, res) => {
     try {
