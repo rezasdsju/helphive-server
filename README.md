@@ -34,14 +34,14 @@ HelpHive is a community-driven volunteering platform that connects people throug
 - View the events you created
 - Update your own events (owner-only)
 
-## Technologies
 
-- Node.js
-- Express.js
-- MongoDB
-- CORS
-- dotenv
-- JOSE (JWT verification using JWKS)
+## Tech Stack
+
+- **Runtime & framework:** Node.js, Express.js
+- **Database:** MongoDB (official Node.js driver)
+- **Authentication:** JWT verification with `jose` and Better Auth JWKS
+- **Utilities:** CORS, dotenv
+- **Deployment:** Vercel
 
 ## API Endpoints
 
