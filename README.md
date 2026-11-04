@@ -13,20 +13,26 @@ HelpHive is a community-driven volunteering platform that connects people throug
 
 **Frontend:** [HelpHive Client](https://github.com/rezasdsju/helphive-client)
 
+
 ## Features
 
-- Event creation API with MongoDB integration
-- JWT-based API authentication using Better Auth JWKS and `jose` for token verification
-- Event creator details (`id`, `name`, `email`) set on the server from the verified token
-- Retrieve all upcoming events
-- Retrieve the six nearest upcoming events
-- Retrieve individual event details by event ID
-- JWT-protected participant registration API with duplicate participation handling
-- Prevent users from joining past events
-- Enforce maximum participant limits during event registration
-- JWT-protected API to retrieve events joined by the authenticated user
-- JWT-protected API to retrieve events created by the authenticated user
-- JWT-Protected Event Update API
+### Security
+- **JWT authentication:** tokens issued by Better Auth are verified on every protected route using the public JWKS endpoint and `jose`
+- **Server-side ownership:** the event creator is taken from the verified token, never from client input, so events cannot be created or modified under another user's name
+
+### Events
+- Create events with category, date, location, image and a participant limit
+- Browse all upcoming events or the six nearest ones
+- View full details of any event by ID
+
+### Participation
+- Join events as a volunteer, with duplicate joins prevented
+- Joining is blocked once an event reaches its participant limit or the date has passed
+- Track every event you have joined
+
+### Management
+- View the events you created
+- Update your own events (owner-only)
 
 ## Technologies
 
