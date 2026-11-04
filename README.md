@@ -49,6 +49,7 @@ HelpHive is a community-driven volunteering platform that connects people throug
 
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
+| GET | `/` | View the list of available API endpoints | Public |
 | POST | `/create-event` | Create a new event | JWT-protected |
 | GET | `/upcoming-events` | Retrieve all upcoming events | Public |
 | GET | `/upcoming-events/:id` | Retrieve event details by ID | Public |
