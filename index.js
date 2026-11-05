@@ -15,7 +15,15 @@ const client = new MongoClient(process.env.MONGODB_URI);
 const JWKS = createRemoteJWKSet(
     new URL(`${process.env.FRONTEND_BASE_URL}/api/auth/jwks`)
 )
-
+const requiredFields = [
+    'title',
+    'description',
+    'type',
+    'image',
+    'location',
+    'date',
+    'maxParticipants'
+]
 export async function connectToMongoDB() {
     try {
         await client.connect();
@@ -144,6 +152,29 @@ app.post('/create-event', verifyToken, async (req, res) => {
             })
         }
 
+
+        const maxParticipants = Number(eventData.maxParticipants)
+
+        const hasInvalidFields = requiredFields.some(field => {
+
+            return (
+                !Object.hasOwn(eventData, field) ||
+                (typeof eventData[field] === 'string' && !eventData[field].trim()) ||
+                (
+                    field === 'maxParticipants' &&
+                    (
+                        !Number.isInteger(maxParticipants) ||
+                        maxParticipants <= 0
+                    )
+                )
+            )
+        })
+
+        if (hasInvalidFields) {
+            return res.status(400).send({
+                message: 'Please provide valid event information'
+            })
+        }
         const today = new Date().toLocaleDateString('en-CA', {
             timeZone: 'Asia/Dhaka'
         })
@@ -154,6 +185,7 @@ app.post('/create-event', verifyToken, async (req, res) => {
         }
         const eventDataWithUserInfo = {
             ...eventData,
+            maxParticipants,
             participants: [],
             createdBy: {
                 id: req.user.id,
