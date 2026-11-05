@@ -67,7 +67,23 @@ const verifyToken = async (req, res, next) => {
 
 
 
+const eventFieldsValidation = (event, maxParticipants) => {
+    const hasInvalidFields = requiredFields.some(field => {
 
+        return (
+            !Object.hasOwn(event, field) ||
+            (typeof event[field] === 'string' && !event[field].trim()) ||
+            (
+                field === 'maxParticipants' &&
+                (
+                    !Number.isInteger(maxParticipants) ||
+                    maxParticipants <= 0
+                )
+            )
+        )
+    })
+    return hasInvalidFields
+}
 
 const apiEndpoints = [
     { method: 'POST', endpoint: '/create-event', description: 'Create a new event', access: 'JWT-protected' },
@@ -155,20 +171,7 @@ app.post('/create-event', verifyToken, async (req, res) => {
 
         const maxParticipants = Number(eventData.maxParticipants)
 
-        const hasInvalidFields = requiredFields.some(field => {
-
-            return (
-                !Object.hasOwn(eventData, field) ||
-                (typeof eventData[field] === 'string' && !eventData[field].trim()) ||
-                (
-                    field === 'maxParticipants' &&
-                    (
-                        !Number.isInteger(maxParticipants) ||
-                        maxParticipants <= 0
-                    )
-                )
-            )
-        })
+        const hasInvalidFields = eventFieldsValidation(eventData, maxParticipants)
 
         if (hasInvalidFields) {
             return res.status(400).send({
@@ -327,7 +330,38 @@ app.patch('/manage-events/:id', verifyToken, async (req, res) => {
             _id: new ObjectId(id),
             'createdBy.id': req.user.id
         }
+
         const updatedEventFromClient = req.body
+        const existingEventInDatabase = await events.findOne(query)
+        if (!existingEventInDatabase) {
+            return res.status(404).send({
+                message: 'Event does not exists in Database'
+            })
+        }
+        const totalParticipants = (existingEventInDatabase.participants || []).length
+        if (Number(updatedEventFromClient.maxParticipants) < totalParticipants) {
+            return res.status(400).send({
+                message: 'Maximum participants cannot be less than current participants'
+            })
+        }
+        const maxParticipants = Number(updatedEventFromClient.maxParticipants)
+        const hasInvalidFields = eventFieldsValidation(updatedEventFromClient, maxParticipants)
+
+        if (hasInvalidFields) {
+            return res.status(400).send({
+                message: 'Please provide valid event information'
+            })
+        }
+        const today = new Date().toLocaleDateString('en-CA', {
+            timeZone: 'Asia/Dhaka'
+        })
+
+        if (!updatedEventFromClient.date || updatedEventFromClient.date < today) {
+            return res.status(400).send({
+                message: 'Please choose today or a future date'
+            })
+        }
+
         const updatedEventToSetDataBase = {
             title: updatedEventFromClient.title,
             description: updatedEventFromClient.description,
@@ -335,8 +369,7 @@ app.patch('/manage-events/:id', verifyToken, async (req, res) => {
             image: updatedEventFromClient.image,
             location: updatedEventFromClient.location,
             date: updatedEventFromClient.date,
-            maxParticipants: updatedEventFromClient.maxParticipants
-
+            maxParticipants: maxParticipants
         }
         const result = await events.updateOne(query, {
             $set: updatedEventToSetDataBase
